@@ -1,0 +1,26 @@
+[
+  {
+    "state": "California",
+    "mape": 12.36,
+    "rmse": 526.22,
+    "threshold": 25.0,
+    "retrain_triggered": false,
+    "timestamp": "2026-05-06T13:07:54"
+  },
+  {
+    "state": "New York",
+    "mape": 30.06,
+    "rmse": 834.21,
+    "threshold": 25.0,
+    "retrain_triggered": true,
+    "timestamp": "2026-05-06T13:08:11"
+  },
+  {
+    "state": "Texas",
+    "mape": 7.53,
+    "rmse": 228.73,
+    "threshold": 25.0,
+    "retrain_triggered": false,
+    "timestamp": "2026-05-06T13:08:11"
+  }
+]

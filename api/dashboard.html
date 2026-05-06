@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Forecasting Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f1117;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    border-bottom: 1px solid #2d3748;
+    padding-bottom: 16px;
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #f7fafc;
+    letter-spacing: -0.3px;
+  }
+
+  header span {
+    font-size: 12px;
+    color: #718096;
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  select, button {
+    background: #1a202c;
+    border: 1px solid #2d3748;
+    color: #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  select:focus, button:hover {
+    border-color: #4299e1;
+    outline: none;
+  }
+
+  button {
+    background: #2b6cb0;
+    border-color: #2b6cb0;
+    font-weight: 500;
+  }
+
+  button:hover { background: #2c5282; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .metric-card {
+    background: #1a202c;
+    border: 1px solid #2d3748;
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .metric-card .label {
+    font-size: 11px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+
+  .metric-card .value {
+    font-size: 26px;
+    font-weight: 700;
+    color: #f7fafc;
+  }
+
+  .metric-card .sub {
+    font-size: 12px;
+    color: #4299e1;
+    margin-top: 4px;
+  }
+
+  .chart-card {
+    background: #1a202c;
+    border: 1px solid #2d3748;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .chart-card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #e2e8f0;
+  }
+
+  canvas { width: 100% !important; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    color: #718096;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid #2d3748;
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #1e2533;
+    color: #cbd5e0;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #2d3748; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-arima    { background:#553c9a; color:#e9d8fd; }
+  .badge-prophet  { background:#2c5282; color:#bee3f8; }
+  .badge-xgboost  { background:#276749; color:#c6f6d5; }
+  .badge-lstm     { background:#744210; color:#fefcbf; }
+
+  #loading {
+    display: none;
+    text-align: center;
+    padding: 40px;
+    color: #718096;
+    font-size: 14px;
+  }
+
+  #error-msg {
+    display: none;
+    background: #742a2a;
+    border: 1px solid #fc8181;
+    color: #fed7d7;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📈 Sales Forecasting Dashboard</h1>
+  <span id="last-updated">—</span>
+</header>
+
+<div class="controls">
+  <select id="state-select" onchange="loadForecast()">
+    <option value="">Loading states...</option>
+  </select>
+  <button onclick="loadForecast()">Load Forecast</button>
+</div>
+
+<div id="error-msg"></div>
+<div id="loading">Loading forecast data...</div>
+
+<div id="main-content" style="display:none">
+
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="label">Best Model</div>
+      <div class="value" id="metric-model">—</div>
+      <div class="sub" id="metric-rmse">—</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Avg Forecast (8w)</div>
+      <div class="value" id="metric-avg">—</div>
+      <div class="sub">weekly sales</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Peak Week</div>
+      <div class="value" id="metric-peak">—</div>
+      <div class="sub" id="metric-peak-date">—</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Total 8-Week</div>
+      <div class="value" id="metric-total">—</div>
+      <div class="sub">projected sales</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h2>Forecast vs Historical</h2>
+    <canvas id="forecast-chart" height="90"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <h2>8-Week Forecast Breakdown</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Predicted Sales</th>
+          <th>Lower Bound</th>
+          <th>Upper Bound</th>
+          <th>Confidence Range</th>
+        </tr>
+      </thead>
+      <tbody id="forecast-table"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const API = '';  // same origin
+let chartInstance = null;
+
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error(`[API Error] ${url} returned ${res.status}:`, errorText);
+    throw new Error(`HTTP ${res.status}: ${errorText}`);
+  }
+  const data = await res.json();
+  console.log(`[API Success] ${url}:`, data);
+  return data;
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideError() {
+  document.getElementById('error-msg').style.display = 'none';
+}
+
+async function loadStates() {
+  try {
+    console.log('[Dashboard] Loading available states...');
+    const data = await fetchJSON(`${API}/states`);
+    const sel  = document.getElementById('state-select');
+    sel.innerHTML = '';
+    data.states.forEach(s => {
+      const opt  = document.createElement('option');
+      opt.value  = s;
+      opt.text   = s;
+      sel.appendChild(opt);
+    });
+    // Auto-load first state
+    if (data.states.length > 0) {
+      console.log(`[Dashboard] Auto-loading first state: ${data.states[0]}`);
+      loadForecast();
+    }
+  } catch (e) {
+    showError('Could not load states. Is the API running? ' + e.message);
+  }
+}
+
+async function loadForecast() {
+  hideError();
+  const state = document.getElementById('state-select').value;
+  console.log(`[Dashboard] Selected state for forecast: ${state}`);
+  if (!state) return;
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('main-content').style.display = 'none';
+
+  try {
+    const forecastUrl = `${API}/forecast?state=${encodeURIComponent(state)}&weeks=8`;
+    const modelsUrl = `${API}/models`;
+    
+    console.log(`[Dashboard] Requesting data for ${state}...`);
+    
+    const [forecastData, modelsData] = await Promise.all([
+      fetchJSON(forecastUrl),
+      fetchJSON(modelsUrl)
+    ]);
+
+    const forecast = forecastData.forecast;
+    const modelInfo = modelsData[state] || {};
+
+    renderMetrics(forecast, modelInfo);
+    renderChart(forecast);
+    renderTable(forecast);
+
+    document.getElementById('last-updated').textContent =
+      'Updated: ' + new Date().toLocaleTimeString();
+    document.getElementById('main-content').style.display = 'block';
+  } catch (e) {
+    console.error('[Dashboard] Error in loadForecast:', e);
+    showError('Error loading forecast: ' + e.message);
+  } finally {
+    document.getElementById('loading').style.display = 'none';
+  }
+}
+
+function renderMetrics(forecast, modelInfo) {
+  const preds  = forecast.map(r => r.predicted_sales);
+  const avg    = preds.reduce((a,b) => a+b, 0) / preds.length;
+  const total  = preds.reduce((a,b) => a+b, 0);
+  const peak   = Math.max(...preds);
+  const peakIdx = preds.indexOf(peak);
+
+  const modelName = modelInfo.best_model || 'N/A';
+  const rmse      = modelInfo.rmse
+    ? `RMSE: ${Number(modelInfo.rmse).toFixed(0)}` : '';
+
+  document.getElementById('metric-model').innerHTML =
+    `<span class="badge badge-${modelName}">${modelName}</span>`;
+  document.getElementById('metric-rmse').textContent = rmse;
+  document.getElementById('metric-avg').textContent =
+    avg.toLocaleString('en-US', {maximumFractionDigits: 0});
+  document.getElementById('metric-peak').textContent =
+    peak.toLocaleString('en-US', {maximumFractionDigits: 0});
+  document.getElementById('metric-peak-date').textContent =
+    forecast[peakIdx]?.date || '';
+  document.getElementById('metric-total').textContent =
+    total.toLocaleString('en-US', {maximumFractionDigits: 0});
+}
+
+function renderChart(forecast) {
+  const labels  = forecast.map(r => r.date);
+  const preds   = forecast.map(r => r.predicted_sales);
+  const lower   = forecast.map(r => r.lower_bound  ?? r.predicted_sales * 0.85);
+  const upper   = forecast.map(r => r.upper_bound  ?? r.predicted_sales * 1.15);
+
+  if (chartInstance) chartInstance.destroy();
+
+  const ctx = document.getElementById('forecast-chart').getContext('2d');
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Predicted Sales',
+          data: preds,
+          borderColor: '#4299e1',
+          backgroundColor: 'rgba(66,153,225,0.1)',
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: '#4299e1',
+          tension: 0.3,
+          fill: false,
+          order: 1
+        },
+        {
+          label: 'Upper Bound',
+          data: upper,
+          borderColor: 'rgba(154,230,180,0.5)',
+          borderWidth: 1,
+          borderDash: [4, 4],
+          pointRadius: 0,
+          fill: '+1',
+          backgroundColor: 'rgba(154,230,180,0.1)',
+          order: 2
+        },
+        {
+          label: 'Lower Bound',
+          data: lower,
+          borderColor: 'rgba(252,129,129,0.5)',
+          borderWidth: 1,
+          borderDash: [4, 4],
+          pointRadius: 0,
+          fill: false,
+          order: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          labels: { color: '#a0aec0', font: { size: 12 } }
+        },
+        tooltip: {
+          backgroundColor: '#2d3748',
+          titleColor: '#f7fafc',
+          bodyColor: '#cbd5e0',
+          callbacks: {
+            label: ctx =>
+              ` ${ctx.dataset.label}: ` +
+              Number(ctx.raw).toLocaleString('en-US',
+                {maximumFractionDigits: 0})
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#718096', font: { size: 11 } },
+          grid:  { color: '#2d3748' }
+        },
+        y: {
+          ticks: {
+            color: '#718096',
+            font: { size: 11 },
+            callback: v =>
+              Number(v).toLocaleString('en-US',
+                {maximumFractionDigits: 0})
+          },
+          grid: { color: '#2d3748' }
+        }
+      }
+    }
+  });
+}
+
+function renderTable(forecast) {
+  const tbody = document.getElementById('forecast-table');
+  tbody.innerHTML = '';
+  forecast.forEach((row, i) => {
+    const lo    = row.lower_bound  ?? row.predicted_sales * 0.85;
+    const hi    = row.upper_bound  ?? row.predicted_sales * 1.15;
+    const range = (hi - lo).toFixed(0);
+    const fmt   = n => Number(n).toLocaleString('en-US',
+      {maximumFractionDigits: 0});
+    tbody.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${row.date}</td>
+        <td><strong>${fmt(row.predicted_sales)}</strong></td>
+        <td style="color:#fc8181">${fmt(lo)}</td>
+        <td style="color:#9ae6b4">${fmt(hi)}</td>
+        <td style="color:#718096">± ${fmt(range/2)}</td>
+      </tr>`;
+  });
+}
+
+// Init
+loadStates();
+</script>
+</body>
+</html>

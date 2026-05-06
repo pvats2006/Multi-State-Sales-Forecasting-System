@@ -1,0 +1,97 @@
+{
+  "California": {
+    "best_model": "arima",
+    "rmse": 1008.9047,
+    "mae": 669.6104,
+    "mape": 42.0559,
+    "all_models": {
+      "arima": {
+        "rmse": 1008.9047,
+        "mae": 669.6104,
+        "mape": 42.0559
+      },
+      "prophet": {
+        "rmse": 23626.9911,
+        "mae": 20283.2884,
+        "mape": 862.1517
+      },
+      "xgboost": {
+        "rmse": 1153.5955,
+        "mae": 810.7102,
+        "mape": 49.7623
+      },
+      "lstm": {
+        "rmse": 1492.5226,
+        "mae": 1193.2765,
+        "mape": 67.7602
+      }
+    }
+  },
+  "New York": {
+    "best_model": "lstm",
+    "rmse": 953.2149,
+    "mae": 818.2214,
+    "mape": 31.1929,
+    "all_models": {
+      "arima": {
+        "rmse": 1070.8356,
+        "mae": 957.9639,
+        "mape": 34.7145
+      },
+      "prophet": {
+        "rmse": 10452.6294,
+        "mae": 9065.723,
+        "mape": 267.8417
+      },
+      "xgboost": {
+        "rmse": 1093.4662,
+        "mae": 952.015,
+        "mape": 37.4687
+      },
+      "lstm": {
+        "rmse": 953.2149,
+        "mae": 818.2214,
+        "mape": 31.1929
+      }
+    }
+  },
+  "Texas": {
+    "best_model": "lstm",
+    "rmse": 362.8895,
+    "mae": 323.3479,
+    "mape": 12.5502,
+    "all_models": {
+      "arima": {
+        "rmse": 715.5636,
+        "mae": 625.5,
+        "mape": 27.0067
+      },
+      "prophet": {
+        "rmse": 3714.9674,
+        "mae": 3525.1975,
+        "mape": 138.9534
+      },
+      "xgboost": {
+        "rmse": 492.3154,
+        "mae": 431.3607,
+        "mape": 18.2196
+      },
+      "lstm": {
+        "rmse": 362.8895,
+        "mae": 323.3479,
+        "mape": 12.5502
+      }
+    }
+  },
+  "_metadata": {
+    "last_run": "2026-05-06T13:16:16",
+    "total_states": 4,
+    "pipeline_version": "1.1",
+    "models_available": [
+      "arima",
+      "prophet",
+      "xgboost",
+      "lstm"
+    ]
+  }
+}

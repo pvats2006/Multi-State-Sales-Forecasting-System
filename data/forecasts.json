@@ -1,0 +1,152 @@
+{
+    "California": [
+        {
+            "date": "2024-01-07",
+            "predicted_sales": 2967.4,
+            "lower_bound": 1727.73,
+            "upper_bound": 4207.07
+        },
+        {
+            "date": "2024-01-14",
+            "predicted_sales": 3361.27,
+            "lower_bound": 2121.6,
+            "upper_bound": 4600.94
+        },
+        {
+            "date": "2024-01-21",
+            "predicted_sales": 2540.97,
+            "lower_bound": 1301.3,
+            "upper_bound": 3780.64
+        },
+        {
+            "date": "2024-01-28",
+            "predicted_sales": 3279.72,
+            "lower_bound": 2040.05,
+            "upper_bound": 4519.4
+        },
+        {
+            "date": "2024-02-04",
+            "predicted_sales": 3153.65,
+            "lower_bound": 1819.38,
+            "upper_bound": 4487.93
+        },
+        {
+            "date": "2024-02-11",
+            "predicted_sales": 3153.65,
+            "lower_bound": 1819.38,
+            "upper_bound": 4487.93
+        },
+        {
+            "date": "2024-02-18",
+            "predicted_sales": 3153.65,
+            "lower_bound": 1819.38,
+            "upper_bound": 4487.93
+        },
+        {
+            "date": "2024-02-25",
+            "predicted_sales": 3153.65,
+            "lower_bound": 1819.38,
+            "upper_bound": 4487.93
+        }
+    ],
+    "New York": [
+        {
+            "date": "2024-01-07",
+            "predicted_sales": 3452.96,
+            "lower_bound": 3106.41,
+            "upper_bound": 3799.51
+        },
+        {
+            "date": "2024-01-14",
+            "predicted_sales": 3627.99,
+            "lower_bound": 3184.38,
+            "upper_bound": 4071.6
+        },
+        {
+            "date": "2024-01-21",
+            "predicted_sales": 3646.09,
+            "lower_bound": 3245.38,
+            "upper_bound": 4046.8
+        },
+        {
+            "date": "2024-01-28",
+            "predicted_sales": 3768.7,
+            "lower_bound": 3419.53,
+            "upper_bound": 4117.88
+        },
+        {
+            "date": "2024-02-04",
+            "predicted_sales": 3809.94,
+            "lower_bound": 3478.49,
+            "upper_bound": 4141.4
+        },
+        {
+            "date": "2024-02-11",
+            "predicted_sales": 3761.17,
+            "lower_bound": 3424.0,
+            "upper_bound": 4098.34
+        },
+        {
+            "date": "2024-02-18",
+            "predicted_sales": 3725.62,
+            "lower_bound": 3252.64,
+            "upper_bound": 4198.6
+        },
+        {
+            "date": "2024-02-25",
+            "predicted_sales": 3737.87,
+            "lower_bound": 3341.92,
+            "upper_bound": 4133.83
+        }
+    ],
+    "Texas": [
+        {
+            "date": "2024-01-07",
+            "predicted_sales": 2415.9,
+            "lower_bound": 2253.31,
+            "upper_bound": 2578.48
+        },
+        {
+            "date": "2024-01-14",
+            "predicted_sales": 2406.52,
+            "lower_bound": 2237.68,
+            "upper_bound": 2575.36
+        },
+        {
+            "date": "2024-01-21",
+            "predicted_sales": 2418.87,
+            "lower_bound": 2275.1,
+            "upper_bound": 2562.64
+        },
+        {
+            "date": "2024-01-28",
+            "predicted_sales": 2430.98,
+            "lower_bound": 2297.46,
+            "upper_bound": 2564.51
+        },
+        {
+            "date": "2024-02-04",
+            "predicted_sales": 2347.44,
+            "lower_bound": 2178.45,
+            "upper_bound": 2516.43
+        },
+        {
+            "date": "2024-02-11",
+            "predicted_sales": 2334.43,
+            "lower_bound": 2136.06,
+            "upper_bound": 2532.8
+        },
+        {
+            "date": "2024-02-18",
+            "predicted_sales": 2351.46,
+            "lower_bound": 2145.28,
+            "upper_bound": 2557.63
+        },
+        {
+            "date": "2024-02-25",
+            "predicted_sales": 2372.45,
+            "lower_bound": 2250.18,
+            "upper_bound": 2494.73
+        }
+    ]
+}
