@@ -469,7 +469,7 @@ This project is licensed under the MIT License.
 
 # 👨‍💻 Author
 
-Developed by **Priyanshu Vats**
+Developed by **Priyanshu**
 Passionate about:
 
 * AI Engineering
